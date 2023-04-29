@@ -1,0 +1,377 @@
+package university;
+//import java.util.Arrays;
+
+public class Classroom {
+	String name;
+	Course[] course;
+	
+	/*kurucuda array tuttuğumda nesne oluşturduğumda hata almama yol açtı
+	 * public Classroom(String name,Course[] course ) { this.name=name; this.course
+	 * =course; }
+	 */
+
+
+	/*public String toString() {
+		return "Classroom [name=" + name + ", course=" + Problemli --> Arrays.toString(course) + "]";
+	}
+	*/
+  
+	public Classroom(String name) {
+		this.name = name;
+	}
+	public String printInfo() {
+		return "Classroom [name=" + name+"]";
+	}
+	public String getName() {
+		return name;
+	}
+}
+
+package university;
+//import java.util.Arrays;
+
+public class Course {
+	
+	  String code;
+    String name;
+    Department department;
+    Professor teacher;
+    Student[] students;
+    Classroom classroom;
+    
+     Course(String code,String name, Department department, Professor teacher, Classroom classroom) {
+    	this.code = code;
+    	this.name = name;
+    	this.department = department;
+    	this.teacher = teacher;
+      
+    	// Önemli.1 !! Department sınıfının setCourses() metoduna uygun yazılmalı ki burada derleme hatası alınmasın. Department sınıfında Course[] array var.
+    	department.setCourses(this);
+      	teacher.setCoursesGiven(this);
+      	this.classroom = classroom;
+     }
+     
+	Course(String code, String name, Department department, Professor teacher, Student[] students, Classroom classroom){
+		this(code,name,department,teacher,classroom);
+		this.students =students;
+	}
+	public String printInfo() {
+	 StringBuilder sb = new StringBuilder();
+     sb.append("Course [code=").append(code);
+     sb.append(", name=").append(name);
+     sb.append(", department=").append(department.name);
+     sb.append(", teacher=").append(teacher.name);
+     sb.append(", classroom=").append(classroom.name);
+     sb.append(", students=[");
+     for (int i = 0; i < students.length; i++) {
+         sb.append(students[i].name);
+         if (i != students.length - 1) {
+             sb.append(", ");
+         }
+     }
+     sb.append("]]");
+     return sb.toString();
+ }
+		
+	/*
+	 * public String toString() { return "Course [code=" + code + ", name=" + name +
+	 * ", department=" + department.name + ", teacher=" + teacher.name +
+	 * ", students=" + //Problemli öğrenci ile ilgili her bilgiyi ekliyor--> Arrays.toString(students) + ", classroom=" + classroom + "]";
+	 * }
+	 */
+			
+	public String getName() {
+		return name;
+	}
+	public Department getDepartment() {
+		return department;
+	}
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+	public Student[] getStudents() {
+		return students;
+	}
+	}
+  package university;
+
+//import java.util.Arrays;
+
+public class Department {
+	 String name;
+	 Professor head;
+	 Course[] courses;
+	 Student[] students;
+	 
+	 Department(String name){
+		 this.name = name;
+	 }
+	 Department(String name,Professor head, Course[] courses, Student[] students){
+		 this(name);
+		 this.head=head;
+		 this.courses=courses;
+     
+     //Önemli.2 !! Cannot invoke setDepartment(Department) on the array type Student[] hatası çözümü -> her bir "Student" nesnesi için "setDepartment" metodu çağrılmalıdır.
+		 this.students = students;
+	     for (int i = 0; i < students.length; i++) {
+	       students[i].setDepartment(this);
+	 }
+	     head.setDepartment(this);
+	 }
+	
+	public Course[] getCourses() {
+		return courses;
+	}
+	//Değişken array tutuyorsa  set metodu bu şekilde olamaz!! 
+	//Course sınıfının kurucusunda  department.setCourses(this) çağrısı yapmak istiyorsan bu çağrıda this değişkeni Course tipinde olduğu için (Course[] course olmadığı için) 
+	//Department sınıfının setCourses() metoduna uygun değil.
+	
+	//public void setCourses(Course[] course) {
+		//this.courses = course;
+	//}
+	//Önemli.3 !! set metodu array type değişkenlerde -->  Course[] courses; gibi  bu şekilde yazılmalı!!
+	public void setCourses(Course course) {
+	    this.courses = new Course[] { course };
+	}
+
+	public Student[] getStudents() {
+		return students;
+	}
+	public void setStudents(Student students) {
+		this.students = new Student[] { students};
+	}
+	public String printInfo() {
+		StringBuilder sb = new StringBuilder();
+	     sb.append("Department [name=").append(name);
+	     sb.append(", head=").append(head.name);
+	     sb.append(", courses=[");
+	     for (int i = 0; i < courses.length; i++) {
+	         sb.append(courses[i].name);
+	         if (i != courses.length - 1) {
+	             sb.append(", ");
+	         }
+	     }
+	     sb.append(", students=[");
+	     for (int i = 0; i < students.length; i++) {
+	         sb.append(students[i].name);
+	         if (i != students.length - 1) {
+	             sb.append(", ");
+	         }
+	     }
+	     sb.append("]]");
+	     return sb.toString();
+	}
+	/*
+	 * public String toString() { return "Department [name=" + name + ", head=" +
+	 * head.name + ", courses=" + //Problem-->Arrays.toString(courses) + ", students=" +
+	 * Arrays.toString(students) + "]"; }
+	 */
+	
+	public String getName() {
+		return name;
+	}
+}
+package university;
+
+import java.util.Arrays;
+
+public class Student {
+	String no;
+	String name;
+	String dob;
+	Department department;
+	Professor advisor;
+	Course[] coursesTaken;
+	
+	//Student(String no,String name,String dob,Department department,Professor advisor,Course[] coursesTaken){}  kurucuda Course[] arrayden dolayı 
+  //nesne oluştururken hata aldığımdan bu kurucuyu sildim.
+  
+	Student(String no,String name,String dob,Department department,Professor advisor){
+		this.no=no;
+		this.name=name;
+		this.dob=dob;
+		this.department=department;
+		department.setStudents(this);
+		this.advisor =advisor;
+		advisor.setAdvisee(this);
+	}
+
+	public Department getDepartment() {
+		return department;
+	}
+
+	public void setDepartment(Department department) {
+		this.department = department;
+	}
+
+	public Professor getAdvisor() {
+		return advisor;
+	}
+
+	public void setAdvisor(Professor advisor) {
+		this.advisor = advisor;
+	}
+
+	public Course[] getCoursesTaken() {
+		return coursesTaken;
+	}
+	//Course sınıfı içinde students.setCoursesTaken(this);  yapmadım direkt bu şekilde set edildi.
+	public void setCoursesTaken(Course[] coursesTaken) {
+		this.coursesTaken = coursesTaken;
+	}
+	public String printInfo() {
+		StringBuilder sb = new StringBuilder();
+	     sb.append("Student [no=").append(no);
+	     sb.append(", name=").append(name);
+	     sb.append(", dob=").append(dob);
+	     sb.append(", department=").append(department.name);
+	     sb.append(", advisor=").append(advisor.name);
+	     sb.append(", coursesTaken=[");
+	     for (int i = 0; i < coursesTaken.length; i++) {
+	         sb.append(coursesTaken[i].name);
+	         if (i != coursesTaken.length - 1) {
+	             sb.append(", ");
+	         }
+	     }
+	     sb.append("]]");
+	     return sb.toString();
+	}
+	/*
+	 * public String toString() { return "Student [no=" + no + ", name=" + name +
+	 * ", dob=" + dob + ", department=" + department.name + ", advisor=" +
+	 * advisor.name; //coursesTaken=" + Arrays.toString(coursesTaken) + "]"; hata
+	 * fırlatıyor bu kısım main mettota toString print ederken. }
+	 */
+	public String getName() {
+		return name;
+	}
+  package university;
+
+//import java.util.Arrays;
+
+public class Test {
+
+	public static void main(String[] args) {
+		
+		
+		//Classroom classroom = new Classroom("Amfi-201", new Course[3]); 
+		/Bu kurucuyu array kullanacak şekilde sınıfında oluşturdum burada bu sınıfta 3 farklı ders işleniliyor demek için ama Course[3] yazıp geçemiyorum derleme hatası alıyorum.
+    // sadece new Course[3] yazdırabiliyorum  ve oluşturulan new Course[3] array nesne atamadım. kurucuda yapamadığım işi hemen aşağıda  classroom.course = new Course[] {course,course1,course2}; oluşturdum 
+    //bu yüzden Classroom sınıfında yeni bir kurucu oluşturdum sadece classroom name şeklinde.
+		// public Classroom(String name,Course[] course) { 
+		 //this.name=name; 
+		 // this.course=course;
+	  // }
+    
+     //kuruculara birbirlerinin referanslarını atayarak ilişki kurdum.
+     
+    Classroom classroom = new Classroom("Amfi-201"); 
+		Department department = new Department("Software Engineering");
+		Professor professor = new Professor("2458","Ahmet Arslan","24.02.1970","Prof.",department);
+		
+		Course course = new Course("SFTW-102","Introductory course in Software",department,professor,classroom);
+		Course course1 = new Course("SFTW-103","Introductory course in Web Design and Programming",department,professor,classroom);
+		Course course2 = new Course("SFTW-104","Introductory course in Mathematics",department,professor,classroom);
+		
+
+		Student student = new Student("2340", "Furkan", "05.04.2000", department, professor);
+		Student student1 = new Student("2341", "Ahmet", "25.02.2000", department, professor);
+		Student student2 = new Student("2342", "Ayse", "12.10.2000", department, professor);
+		Student student3 = new Student("2343", "Mehmet", "01.02.2001", department, professor);
+		
+		//Student student = new Student("2347", "Furkan", "05.04.2000", department, professor, new Course[3]);
+		/* tıpkı en üstteki classroom nesnesı olustururkenki array sorununun aynısı
+		 * new Course[3] yine kurucu oluşturulurken Course[] coursesTaken ekledim kurucuya öğrencının aldığı dersler için
+		 *  ancak nesne oluştururken burada yukarıda olduğu gibi new Course[3] diyerek kurucuya array geçebiliyorum.
+		 *  o yüzden kurucu içerisinde array içermeyecek şekilde hazırlamak zorunda kaldım. Array kullanılacaksa kurucuda olmayacak şekilde aşağıda gerekli atamaları atıp düzenledim.
+		 */		
+		
+		
+		 //classroomda işlenilen dersleri kurucusunun dışında bu şekilde atadım
+			classroom.course = new Course[] {course,course1,course2};
+			
+			course.students = new Student[] {student,student1,student2,student3};
+			course1.students = new Student[] {student,student1,student2,student3};
+			course2.students = new Student[] {student,student1,student2,student3};
+			
+			department.courses = new Course[] {course,course1,course2};
+			
+			department.head = professor;
+			department.students =  new Student[4];
+			department.students[3] = student3;
+			department.students[2] = student2;
+			department.students[1] = student1;
+			department.students[0] = student;
+			
+			professor.advisee = new Student[] {student,student1,student2,student3};
+			professor.coursesGiven = new Course[] { course,course1,course2};
+			
+			 //öğrencilerin aldığı dersleri kurucusunun dışında bu şekilde atadım
+			student.coursesTaken = new Course[] {course,course1,course2};
+			student1.coursesTaken = new Course[] {course,course1,course2};
+			student2.coursesTaken = new Course[] {course,course1,course2};
+			student3.coursesTaken = new Course[] {course,course1,course2};
+			
+			//tüm array ayarlamalarını yaptım. for each ile dizi içerisindeki nesnelerin adlarını okutacağım.
+			
+			System.out.println("Lessons in class named "+classroom.name+": ");
+			for(Course lessons : classroom.course)
+				System.out.println(lessons.name);
+			
+			System.out.println();
+			
+			System.out.println("Information about the first lesson: "+classroom.course[0].printInfo());
+			
+			System.out.println();
+			
+		for (Course coursesOfDepartment : department.getCourses()) {
+		    System.out.println("Courses of the department: "+coursesOfDepartment.getName());	
+		}
+		System.out.println();
+		
+		for (Student studentsOfDepartment : department.getStudents()) {
+	    System.out.println("Students of the Department: "+studentsOfDepartment.getName());
+		}
+    	System.out.println();
+		for (Course coursesGivenByTheProfessor : professor.getCoursesGiven()) {
+		    System.out.println("Courses given by the professor: "+coursesGivenByTheProfessor.getName());
+		}
+		System.out.println();
+		
+		for (Student studentsOfCourse : course.getStudents()) {
+		    System.out.println("Students of the Course: "+studentsOfCourse.getName());
+			}
+		System.out.println();
+		
+		System.out.println("\nCourses "+student.name+" has taken: ");	
+		for (Course coursesTaken : student.getCoursesTaken()) {
+		    System.out.println(coursesTaken.getName());
+			}
+      
+		System.out.println();
+		
+		for(Student advisee : professor.getAdvisee()) {
+			System.out.println("Thesis students of the professor: "+advisee.getName());
+		}
+		
+		System.out.println();
+		
+		//department.students[2]--> student.getName(); gibi sadece öğrencinin adını alma yöntemi
+		   String a = department.students[2].name;
+		   System.out.println("deneme :"+a);
+
+		System.out.println(classroom.printInfo());
+		System.out.println();
+		System.out.println(department.printInfo());
+		System.out.println();
+		System.out.println(professor.printInfo());
+		System.out.println();
+		System.out.println(course.printInfo());
+		System.out.println();
+		System.out.println(student.printInfo());
+		System.out.println(student1.printInfo());
+		System.out.println(student2.printInfo());
+		System.out.println(student3.printInfo());
+	}
+}
+}
